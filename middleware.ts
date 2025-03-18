@@ -45,7 +45,7 @@ export async function middleware(request: Request) {
   }
   
   // 域名API特殊处理
-  if (pathname === '/api/domains' && request.method === 'GET') {
+  if (pathname === '/api/emails/domains' && request.method === 'GET') {
     return handleApiMailDomains()
   }
 
