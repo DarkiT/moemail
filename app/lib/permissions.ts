@@ -12,8 +12,7 @@ export const PERMISSIONS = {
   MANAGE_WEBHOOK: 'manage_webhook',
   PROMOTE_USER: 'promote_user',
   MANAGE_CONFIG: 'manage_config',
-  MANAGE_API_KEY: 'manage_api_key',
-  MANAGE_DOMAIN: 'manage_domain',
+  MANAGE_API_KEY: 'manage_api_key'
 } as const;
 
 export type Permission = typeof PERMISSIONS[keyof typeof PERMISSIONS];
