@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server"
 import { getRequestContext } from "@cloudflare/next-on-pages"
 
+// 定义邮箱域名响应的接口
+interface EmailDomainsResponse {
+  emailDomains: string[];
+}
+
 export async function getMailDomains() {
     const env = getRequestContext().env
     const emailDomainsStr = await env.SITE_CONFIG.get("EMAIL_DOMAINS") || "moemail.app"
@@ -10,13 +15,15 @@ export async function getMailDomains() {
   
     return Response.json({
       emailDomains: emailDomains
-    })
+    } as EmailDomainsResponse)
 }
 
 export async function handleApiMailDomains() {
     try {
       const response = await getMailDomains()
-      const { emailDomains } = await response.json()
+      // 添加类型断言，明确指定response.json()的返回类型
+      const data = await response.json() as EmailDomainsResponse
+      const { emailDomains } = data
       
       // 直接返回获取到的域名数组
       return NextResponse.json({
