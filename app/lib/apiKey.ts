@@ -25,7 +25,7 @@ async function getUserByApiKey(key: string): Promise<User | null> {
 }
 
 export async function handleApiKeyAuth(apiKey: string, pathname: string) {
-  if (!pathname.startsWith('/api/emails')) {
+  if (!pathname.startsWith('/api/emails') && pathname !== '/api/emails/domains') {
     return NextResponse.json(
       { error: "无权限查看" },
       { status: 403 }

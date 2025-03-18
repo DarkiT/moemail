@@ -12,6 +12,7 @@ const API_PERMISSIONS: Record<string, Permission> = {
   '/api/roles/promote': PERMISSIONS.PROMOTE_USER,
   '/api/config': PERMISSIONS.MANAGE_CONFIG,
   '/api/api-keys': PERMISSIONS.MANAGE_API_KEY,
+  '/api/domains': PERMISSIONS.MANAGE_DOMAIN,
 }
 
 export async function middleware(request: Request) {
@@ -20,6 +21,11 @@ export async function middleware(request: Request) {
   // 匹配所有API路径
   if (!pathname.startsWith('/api/')) {
     return NextResponse.next()
+  }
+  
+  // 特殊处理 /api/emails/domains 路径 (新增的域名API路径)
+  if (pathname === '/api/emails/domains' && request.method === 'GET') {
+    return handleApiMailDomains()
   }
 
   // API Key 认证
@@ -41,11 +47,6 @@ export async function middleware(request: Request) {
   // 公共GET接口处理
   if (pathname === '/api/config' && request.method === 'GET') {
     return NextResponse.next()
-  }
-  
-  // 域名API特殊处理
-  if (pathname === '/api/emails/domains' && request.method === 'GET') {
-    return handleApiMailDomains()
   }
 
   // 常规权限校验
