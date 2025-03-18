@@ -25,7 +25,10 @@ export async function handleApiMailDomains() {
         success: true
       })
       
-    } catch (error) {
+    } catch (error: any) {
+      // 记录错误信息，解决 error 变量未使用的问题
+      console.error("获取邮箱域名失败:", error?.message || "未知错误");
+      
       return NextResponse.json(
         { error: "服务器内部错误", success: false },
         { status: 500 }
