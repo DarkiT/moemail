@@ -4,6 +4,7 @@ import { PERMISSIONS } from "@/lib/permissions"
 import { checkPermission } from "@/lib/auth"
 import { Permission } from "@/lib/permissions"
 import { handleApiKeyAuth } from "@/lib/apiKey"
+import { handleApiMailDomains } from "@/lib/domains"
 
 const API_PERMISSIONS: Record<string, Permission> = {
   '/api/emails': PERMISSIONS.MANAGE_EMAIL,
@@ -11,10 +12,16 @@ const API_PERMISSIONS: Record<string, Permission> = {
   '/api/roles/promote': PERMISSIONS.PROMOTE_USER,
   '/api/config': PERMISSIONS.MANAGE_CONFIG,
   '/api/api-keys': PERMISSIONS.MANAGE_API_KEY,
+  '/api/domains': PERMISSIONS.MANAGE_DOMAIN,
 }
 
 export async function middleware(request: Request) {
   const pathname = new URL(request.url).pathname
+  
+  // 匹配所有API路径
+  if (!pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
 
   // API Key 认证
   request.headers.delete("X-User-Id")
@@ -32,14 +39,20 @@ export async function middleware(request: Request) {
     )
   }
 
+  // 公共GET接口处理
   if (pathname === '/api/config' && request.method === 'GET') {
     return NextResponse.next()
   }
+  
+  // 域名API特殊处理
+  if (pathname === '/api/domains' && request.method === 'GET') {
+    return handleApiMailDomains()
+  }
 
+  // 常规权限校验
   for (const [route, permission] of Object.entries(API_PERMISSIONS)) {
     if (pathname.startsWith(route)) {
       const hasAccess = await checkPermission(permission)
-
       if (!hasAccess) {
         return NextResponse.json(
           { error: "权限不足" },
@@ -60,5 +73,6 @@ export const config = {
     '/api/roles/:path*',
     '/api/config/:path*',
     '/api/api-keys/:path*',
+    '/api/domains/:path*',
   ]
 } 
