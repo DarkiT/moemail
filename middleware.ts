@@ -12,7 +12,6 @@ const API_PERMISSIONS: Record<string, Permission> = {
   '/api/roles/promote': PERMISSIONS.PROMOTE_USER,
   '/api/config': PERMISSIONS.MANAGE_CONFIG,
   '/api/api-keys': PERMISSIONS.MANAGE_API_KEY,
-  '/api/domains': PERMISSIONS.MANAGE_DOMAIN,
 }
 
 export async function middleware(request: Request) {
@@ -23,7 +22,7 @@ export async function middleware(request: Request) {
     return NextResponse.next()
   }
   
-  // 特殊处理 /api/emails/domains 路径 (新增的域名API路径)
+  // 仅处理 /api/emails/domains 路径
   if (pathname === '/api/emails/domains' && request.method === 'GET') {
     return handleApiMailDomains()
   }
@@ -73,6 +72,5 @@ export const config = {
     '/api/roles/:path*',
     '/api/config/:path*',
     '/api/api-keys/:path*',
-    '/api/domains/:path*',
   ]
 } 
